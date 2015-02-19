@@ -1,0 +1,86 @@
+\documentclass[a4paper,12pt,russian]{article}
+\pagestyle{empty}
+\usepackage{layout}
+\usepackage[left=2.5cm, right=1cm, bottom=1cm, top=1cm]{geometry}
+\parindent=1.0cm
+\footskip=0.2cm
+\usepackage[utf8]{inputenc}
+\usepackage[T2A]{fontenc}
+\usepackage[russian,english]{babel}
+\usepackage{pscyr}
+\usepackage[center,small]{titlesec}
+\titlelabel{\thesection.\quad}
+\renewcommand{\baselinestretch}{1.25}
+\renewcommand{\normalfont}{\fontsize{14}{20}\selectfont}
+\renewcommand{\tiny}{\fontsize{12}{14}\selectfont}
+\renewcommand{\maketitle}[2]{
+\begin{titlepage}
+\begin{center}\linespread{1}\normalfont
+Министерство образования и науки РФ
+
+ФГБПОУ ВПО Тульский государственный университитет
+
+\vskip 0pt plus 0.5fil
+КАФЕДРА АВТОМАТИКИ И ТЕЛЕМЕХАНИКИ
+
+\vfil
+\textbf{#2}
+
+\vskip 2cm
+Лабораторная работа № #1
+
+по курсу «Программирование на ЯВУ»
+
+\vfil
+Вариант № 4
+
+\vfil
+\begin{tabular*}{17.5cm}{ll@{\extracolsep{\fill}}c@{\extracolsep{0pt}}l}
+Выполнил: & студент группы 220601&&Белым~А.А.\\ \cline{3-3}
+								&&\tiny{(подпись)}& 	\\
+Проверил: & к. ф.-м. н., доцент &&Сулимова~В.В.\\ \cline{3-3}
+								&&\tiny{(подпись)}& 	\\
+\end{tabular*}
+\vfil
+Тула 2011
+\eject
+\end{center}
+\end{titlepage}
+}
+\makeatletter
+\renewcommand{\@oddfoot}{{\quad\hfill\quad \thepage}}
+\renewcommand{\@evenfoot}{{\quad\hfill\quad \thepage}}
+\makeatother
+\newcommand{\ssec}[1]{\section{#1}\indent}
+\begin{document}
+\selectlanguage{russian}
+\maketitle 0 \LaTeX
+\normalfont
+\ssec{Цель работы}
+Цель работы заключается в том, чтобы научиться составлять каркас простейшей
+программы в среде DELPHI. Таакже требуется написать и отладить программу линейного алгоритма.
+
+\ssec{Задание на работу}
+
+Cоставить программу вычисления для заданных значений x, y, z
+арифметического выражения:
+
+Привет, мир!
+
+Пока, мир!
+
+Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+
+Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+
+Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+
+Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+
+Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+
+Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+
+Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+\end{document}

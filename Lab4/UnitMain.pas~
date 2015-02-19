@@ -1,0 +1,119 @@
+unit UnitMain;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, StdCtrls, Buttons, ExtCtrls;
+
+type
+  TStrArray=array of string;
+  TfrmMain = class(TForm)
+    edtNewLine: TLabeledEdit;
+    lstStrings: TListBox;
+    btnClose: TBitBtn;
+    grpResult: TGroupBox;
+    lblResult: TLabel;
+    btnDelete: TButton;
+    lblInfo: TLabel;
+    procedure edtNewLineKeyPress(Sender: TObject; var Key: Char);
+    procedure btnDeleteClick(Sender: TObject);
+    procedure lstStringsClick(Sender: TObject);
+    function InputString:string;
+    procedure Output(x:TStrArray);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  frmMain: TfrmMain;
+
+implementation
+
+{$R *.dfm}
+  procedure addGroup(const str:string;const beg,end_:integer;var x:TStrArray);
+  var k:integer;
+  begin
+    k:=length(x);
+    if ((end_-beg) mod 2 = 0) then begin
+        inc(k);
+        setlength(x,k);
+        if (length(x)=k)and(x<>NIL) then
+          x[k-1]:=copy(str,beg,end_-beg)
+        else begin
+          setlength(x,0) ;
+          x:=NIL;
+          OutOfMemoryError;
+        end;
+      end;
+  end;
+  
+function getGroups(const str:String):TStrArray;
+var x:TStrArray;
+  beg,i:integer;
+
+begin
+  beg:=1;
+  if length(str)<>1 then begin
+  for i:=2 to length(str) do begin
+    if str[i]<>str[i-1] then begin
+      addGroup(str,beg,i,x);
+      beg:=i;
+    end;
+
+  end;
+  addGroup(str,beg,length(str)+1,x);
+  end else Result:=NIL;
+  Result:=x;
+end;
+procedure TfrmMain.edtNewLineKeyPress(Sender: TObject; var Key: Char);
+begin
+  if Key=#13 then begin
+      Key:=#0;
+      lstStrings.Items.Add(edtNewLine.Text);
+      edtNewLine.Text:='';
+  end
+  else if (Key<>'0') and (Key<>'1') then
+      Key:=#0;
+
+    
+end;
+
+
+
+procedure TfrmMain.btnDeleteClick(Sender: TObject);
+begin
+  lstStrings.Items.Delete(lstStrings.ItemIndex);
+end;
+
+procedure TfrmMain.lstStringsClick(Sender: TObject);
+var x:TStrArray; str:string;
+begin
+  str:=InputString;
+  try
+    x:=getGroups(str);
+    Output(x);
+    setlength(x,0);x:=NIL;
+  except
+    on EOutOfMemory do
+      MessageDlg('Ошибка выделения памяти!',mtError,[mbOK],0);
+  end;
+
+end;
+
+function TfrmMain.InputString:string;
+begin
+  result:=lstStrings.Items[lstStrings.ItemIndex];
+end;
+procedure TfrmMain.Output(x:TStrArray);
+var i:integer;
+begin
+  lblResult.Caption:= '';
+  if x<>NIL then
+  for i:=0 to (length(x)-1) do
+     lblResult.Caption:= lblResult.Caption+x[i]+#10#13;
+end;
+end.
+

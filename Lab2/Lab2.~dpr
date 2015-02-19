@@ -1,0 +1,13 @@
+program Lab2;
+
+uses
+  Forms,
+  UnitMain in '..\Lab1\UnitMain.pas' {frmMain};
+
+{$R *.res}
+
+begin
+  Application.Initialize;
+  Application.CreateForm(TfrmMain, frmMain);
+  Application.Run;
+end.

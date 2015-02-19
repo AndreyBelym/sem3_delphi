@@ -1,0 +1,277 @@
+\input template.tex
+\begin{document}
+\selectlanguage{russian}
+\maketitle 7 {ИНТЕРФЕЙС ПЕРЕНОСА DRAG-AND-DROP}
+\setcounter{page}{2}
+\normalfont
+\ssec{Цель работы}
+Цель работы заключается в том, чтобы изучить интерфейс переноса Drag\&Drop и написать программу с его использованием.  
+
+\ 
+\ssec{Задание на работу}
+Реализовать конвертер единиц измерения. На форме расположить список доступных единиц измерения. Из него выбирать нужные единицы измерения путем перетаскивания их мышкой. Результат перевода вместе с исходными данными фиксировать в TMemo, в виде строки, например, 15 сантиметров = 150 миллиметров. 
+
+\clearpage
+\ssec{Теоретическая справка}
+{\hbadness=10000
+\loop{}\ifnum\thepage<5{\hrule\hfill\\}\repeat
+\newcounter{lc}\setcounter{lc}{29}
+\loop{}\ifnum\value{lc}>0{\addtocounter{lc}{-1}\hrule\hfill\\}\repeat
+}
+%\vfill
+\ssec{Инструкция пользователю}
+ Программа позволяет конвертировать величины различных единиц измерения между собой.
+
+ Выберите класс  единиц измерения, после чего перетащите наименования единиц измерения в области, ограниченные рамкой. Введите значение в любое поле ввода и нажмите клавишу <Enter> на клавиатуре или кнопку "=" в окне программы.
+\ 
+\ssec{Инструкция программиста}
+При создании программы конвертации единиц измерения были объявлены типы:
+\elist{
+\item TConvertUnits - запись, описывающая список типов(единиц измерения) величин.
+
+В таблице \ref{TConvertUnits:2} представлены поля этого типа:
+\tabl{Поля типа  "список единиц измерения"}{
+\tabln{Category&ShortString&категория}
+\tabln{Units&array of ShortString&наименования}
+}{TConvertUnits:2}{H}
+   
+    
+\item  TUnitsTable=array of TConvertUnits, описывает таблица типов величин.
+
+\item  TConvertFunction=function (value:extended):extended; stdcall;
+
+описывает тип функции перевода величин.
+
+\item  TConvertLine - запись, которая описывает строку таблицы конвертации.
+В таблице \ref{TConvertLine:2} приведены поля этого типа.
+\tabl{Поля типа  " строка таблицы конвертации"}{
+\tabln{SrcUnit,DstUnit&ShortString &исходный и требуемый типы}
+\tabln{ConvertFunc&TConvertFunction& функция конвертации}
+}{TConvertLine:2}{H}
+    
+    
+
+\item  TConvertTable=array of TConvertLine, описывает таблицу конвертации.
+
+ 
+\item  UnitsTableExportFunc=function:TUnitsTable; stdcall;
+
+описывает тип функции экспорта таблицы типов из DLL.
+  
+\item  ConvertTableExportFunc=function:TConvertTable;  stdcall;
+
+описывает тип функции экспорта таблицы конвертации из DLL
+  
+\item  GarbageCollectorFunc=procedure (var units:TUnitsTable;
+
+var convert:TConvertTable); stdcall;
+
+тип функции сборки мусора из DLL
+}
+
+
+Были объявлены следующие глобальные переменные, описание которых приводится в таблице \ref{GlobalVar:1}:
+
+
+\tabl{Глобальные переменные модуля}{
+\tabln{ ConvertTable&TConvertTable&таблица конвертации}
+\tabln{  UnitsTable&TUnitsTable&таблица единиц измерения}
+\tabln{  LoadedLibraries&array of Cardina&список подключенных DLL}
+}{GlobalVar:1}{H}
+
+Далее программа была разбита на следующие подпрограммы:
+
+\elist{
+\item Функция GetConvFunction получает из таблицы ConvTable для единиц измерения
+SrcUnit(исходный тип) и DstUnit(целевой тип) 
+
+функцию конвертации ConvFunc.
+
+Если функция найдена, возвращает True, в противном случае возвращает False.
+
+function GetConvFunction(ConvTable:array of TConvertLine;
+          
+SrcUnit,DstUnit:ShortString;
+           
+ var ConvFunc:TConvertFunction):Boolean;
+
+Параметры  функции \ftab{GetConvFunction:1}:
+\tabl{Параметры  функции получения функции конвертации}{
+\tabln{ConvTable&array of TConvertLine & таблица конвертации}
+\tabln{SrcUnit,DstUnit &ShortString & исходный тип и целевой тип конвертации}
+\tabln{var ConvFunc &TConvertFunction  & функция конвертации}
+}{GetConvFunction:1}{H}
+
+Локальные переменные  функции \ftab{GetConvFunction:2}:
+\tabl{Локальные переменные  функции получения функции конвертации}{
+\tabln{i &LongInt  & счетчик для обработки массива}
+}{GetConvFunction:2}{H}
+
+\item Процедура ConnectDLL подключает библиотеку DllName и
+импортирует таблицы единиц измерений и конвертации.
+
+procedure ConnectDLL(DllName:PChar);
+
+Параметры процедуры \ftab{ConnectDLL:1}:
+\tabl{Параметры процедуры подключения DLL}{
+\tabln{DllName &PChar  & путь к библиотеке}
+}{ConnectDLL:1}{H}
+
+
+Локальные переменные  процедуры \ftab{ConnectDLL:2}:
+\tabl{Локальные переменные  процедуры подключения DLL}{
+\tabln{Handle &Cardinal  & дескриптор библиотеки}
+\tabln{NewUnits &TUnitsTable  & импортированная таблица типов}
+\tabln{NewConvert &TConvertTable &импортированная таблица конвертации}
+\tabln{UExport &UnitsTableExportFunc  & функция импорта таблицы типов}
+\tabln{CExport &ConvertTableExportFunc & функция импорта таблицы конвертации}
+\tabln{GCollect &GarbageCollectorFunc  & функция сборки мусора}
+\tabln{i,j,k,m &LongInt  & счетчики для обработки массивов;}
+\tabln{l1,l2 &LongInt  &\parbox{7cm}{ размеры существующей и \\импортированной таблиц конвертации}}
+\tabln{l1u,l2u &LongInt  & \parbox{7cm}{размер существующего \\списка типов и импортированного}}
+\tabln{appended,exist &boolean  & \parbox{7cm}{флаги наличия импорти-\\руемых данных в таблицах}}
+}{ConnectDLL:2}{H}
+
+\item Процедура lblFstUnitDragDrop -  обработчик "сбрасывания" в поле единиц измерения.
+
+  procedure TfrmMain.lblFstUnitDragDrop(Sender, Source: TObject; X, Y: Integer);
+
+Параметры процедуры \ftab{lblFstUnitDragDrop:1}:
+\tabl{Параметры процедуры-обработчика события"сбрасывания" в поле единиц измерения}{
+\tabln{Sender&TObject & объект-возбудитель события}
+\tabln{Sender&TObject & объект-возбудитель события}
+}{lblFstUnitDragDrop:1}{H}
+
+\item  Процедура lblFstUnitDragOver  -  обработчик "попадания" в поле единиц измерения.
+
+     procedure TfrmMain.lblFstUnitDragOver(Sender, Source: TObject; X, Y: Integer;
+     
+
+ State: TDragState; var Accept: Boolean);
+
+Параметры процедуры \ftab{lblFstUnitDragOver:1}:
+\tabl{Параметры процедуры-обработчика события "попадания" в поле единиц измерения}{
+\tabln{Sender&TObject & объект-приемник и объект-источник DragNDrop}
+\tabln{X, Y&Integer &координаты курсора}
+\tabln{State&TDragState &состояние операции DragNDrop}
+\tabln{Accept&Boolean & принять объект или нет}
+}{lblFstUnitDragOver:1}{H}
+
+\item  Процедура imgFstTrashDragOver  -  обработчик "сбрасывания" в мусорную корзину.
+
+     procedure TfrmMain.imgFstTrashDragOver(Sender, Source: TObject;
+
+ X, Y: Integer;
+      
+State: TDragState; var Accept: Boolean);
+
+Параметры процедуры \ftab{imgFstTrashDragOver:1}:
+\tabl{Параметры процедуры-обработчика события "сбрасывания" в мусорную корзину}{
+\tabln{Sender&TObject & объект-приемник и объект-источник DragNDrop}
+\tabln{X, Y&Integer &координаты курсора}
+\tabln{State&TDragState &состояние операции DragNDrop}
+\tabln{Accept&Boolean & принять объект или нет}
+}{imgFstTrashDragOver:1}{H}
+
+\item Процедура imgFstTrashDragDrop   -  обработчик "попадания" в мусорную корзину.
+
+     procedure TfrmMain.imgFstTrashDragDrop(Sender, Source: TObject;
+
+ X, Y: Integer);
+
+Параметры процедуры \ftab{imgFstTrashDragDrop:1}:
+\tabl{Параметры процедуры-обработчика события "попадания" в мусорную корзину}{
+\tabln{Sender&TObject & объект-приемник и объект-источник DragNDrop}
+\tabln{X, Y&Integer &координаты курсора}
+}{imgFstTrashDragDrop:1}{H}
+
+\item Процедура edtFstValKeyPress  -  обработчик нажатий клавиатуры в поле ввода величин.
+
+     procedure TfrmMain.edtFstValKeyPress(Sender: TObject; var Key: Char);
+
+Параметры процедуры \ftab{edtFstValKeyPress:1}:
+\tabl{Параметры процедуры-обработчика события нажатий клавиатуры в поле ввода величин}{
+\tabln{Sender&TObject & объект-возбудитель события}
+\tabln{Key&Char & символ нажатой клавиши}
+}{edtFstValKeyPress:1}{H}
+
+\item   Процедура cbxCategorySelect -  обработчик выбора категорий типов.
+
+     procedure TfrmMain.cbxCategorySelect(Sender: TObject);
+
+Параметры процедуры \ftab{cbxCategorySelect:1}:
+\tabl{Параметры процедуры-обработчика события нажатия  выбора категорий типов}{
+\tabln{Sender&TObject & объект-возбудитель события}
+}{cbxCategorySelect:1}{H}
+
+ \item Процедура FormCreate  - обработчик создания формы.
+  
+   procedure TfrmMain.FormCreate(Sender: TObject);
+
+Параметры процедуры \ftab{FormCreate:1}:
+\tabl{Параметры процедуры-обработчика события создания формы}{
+\tabln{Sender&TObject & объект-возбудитель события}
+}{FormCreate:1}{H}
+
+\item  Процедура FormDestroy  -  обработчик разрушения формы.
+
+     procedure TfrmMain.FormDestroy(Sender: TObject);
+
+Параметры процедуры \ftab{FormDestroy:1}:
+\tabl{Параметры процедуры-обработчика события разрушения формы}{
+\tabln{Sender&TObject & объект-возбудитель события}
+}{FormDestroy:1}{H}
+
+\item Процедура btnEquClick -   обработчик нажатия кнопки "равно".
+
+    procedure TfrmMain.btnEquClick(Sender: TObject);
+
+Параметры процедуры \ftab{btnEquClick:1}:
+\tabl{Параметры процедуры-обработчика события нажатия кнопки "равно"}{
+\tabln{Sender&TObject & объект-возбудитель события}
+}{btnEquClick:1}{H}
+}
+
+Кроме того, подключаемые DLL должны экспортировать функции:
+\elist{
+\item Процедура CollectGarbage освобождает память из-под таблицы
+единиц измерения units и таблицы конвертации convert.
+
+procedure CollectGarbage(var units:TUnitsTable;
+
+var convert:TConvertTable); stdcall;
+
+\item Функция ExportUnitsTable возвращает экспортируемую библиотекой
+таблицу единиц измерения.
+
+function ExportUnitsTable:TUnitsTable; stdcall;
+
+\item Функция ExportConvertTable возвращает экспортируемую библиотекой
+таблицу единиц конвертации.
+
+function ExportConvertTable:TConvertTable; stdcall;
+
+}
+\clearpage
+\ssec{Текст программы}
+Далее приведен текст программы конвертации единиц измерения, написанной на языке Delphi 7.
+\prog{Delphi}{UnitMain.pas}
+
+Ниже приведен текст библиотеки для конвертации единиц температуры.
+\prog{Delphi}{thermal.dpr}
+
+Ниже приведен текст библиотеки для конвертации единиц давления.
+\prog{Delphi}{pressure.dpr}
+
+Ниже приведен текст библиотеки для конвертации единиц энергии.
+\prog{Delphi}{energy.dpr}
+
+\clearpage
+
+\ssec{Тестовый пример}
+Ниже на рисунке \ref{SCR1} представлен пример работы программы конвертации единиц измерения.
+\pic{SCR1.png}{Пример работы программы  конвертации единиц измерения}{SCR1}{H}
+\ 
+\ssec{Вывод}
+В этой лабораторной работе я изучил способы реализации механизма Drag-and-Drop в программах на Delphi. Механизм  Drag-and-Drop позволяет создавать удобные и дружелюбные к пользователю приложения, т. к. позволяет сделать интерфейс приложения более интуитивным.
+\end{document}

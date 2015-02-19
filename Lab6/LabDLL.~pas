@@ -1,0 +1,15 @@
+Library LabDLL;
+Uses UnitMain in 'UnitMain.pas';
+
+
+function TfrmMain.CalcW(x,y,z:Double):Double;
+begin
+  CalcW:=Power(Abs(cos(x)-cos(y)),1+2*sqr(sin(y)))*
+    (1+z+sqr(z)/2+z*sqr(z)/3+sqr(z)*sqr(z)/4);
+end;
+
+export  CalcW;
+begin
+
+end.
+ 

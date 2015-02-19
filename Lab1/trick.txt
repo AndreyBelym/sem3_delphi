@@ -1,0 +1,15 @@
+{
+  ok:=TryStrToFloat(txtX.Text,x);
+  errors:=copy('x'+not_num,1,integer(not ok)*(len(not_num)+1));
+  ok:=TryStrToFloat(txtY.Text,y);
+  errors:=errors+copy('y'+not_num,1,integer(not ok)*(len(not_num)+1));
+  ok:=TryStrToFloat(txtZ.Text,z);
+  errors:=errors+copy('z'+not_num,1,integer(not ok)*(len(not_num)+1));
+  w:=0;
+  ok:=(errors<>'') and tryStrToFloat(
+                FloatToStr(Power(Abs(cos(x)-cos(y)),1+2*sqr(sin(y)))*
+                (1+z+sqr(z)/2+z*sqr(z)/3+sqr(z)*sqr(z)/4)),
+                w)
+                or ((MessageDlg('Ioeaee:'+#10#13+errors,mtError,[mbOK],0)<>0)
+                  and False ;
+  w_str:=strto}
